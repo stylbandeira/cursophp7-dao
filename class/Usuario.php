@@ -45,11 +45,7 @@ class Usuario{
 
 		$results = $sql->select($query);
 		if (count($results) > 0) {
-			$row = $results[0];
-			$this->setIdusuario($row['idusuario']);
-			$this->setDeslogin($row['deslogin']);
-			$this->setDessenha($row['dessenha']);
-			$this->setDtcadastro(new DateTime($row['dtcadastro']));
+			$this->setData($results[0]);
 		}
 	}
 
@@ -75,15 +71,39 @@ class Usuario{
 
 		$results = $sql->select($query);
 		if (count($results) > 0) {
-			$row = $results[0];
-			$this->setIdusuario($row['idusuario']);
-			$this->setDeslogin($row['deslogin']);
-			$this->setDessenha($row['dessenha']);
-			$this->setDtcadastro(new DateTime($row['dtcadastro']));
+			$this->setData($results[0]);
 		} else {
 
 			throw new Exception("Login e/ou senha inválidos.");
 		}
+	}
+
+	public function setData($data){
+		$this->setIdusuario($data['idusuario']);
+		$this->setDeslogin($data['deslogin']);
+		$this->setDessenha($data['dessenha']);
+		$this->setDtcadastro(new DateTime($data['dtcadastro']));
+	}
+
+	public function insert(){
+		$sql = new Sql();
+		$query = "CALL sp_usuarios_insert('".$this->getDeslogin()."', '".$this->getDessenha()."')";
+
+		$results =  $sql->select($query);
+		if (count($results)) {
+			$this->setData($results[0]);
+		}
+
+
+	}
+
+	public function update($login, $password){
+		$this->setDeslogin($login);
+		$this->setDessenha($password);
+		$sql = new Sql();
+
+		$query = "UPDATE tb_usuarios SET deslogin = '{$this->getDeslogin()}', dessenha = '{$this->getDessenha()}' WHERE idusuario = {$this->getIdusuario()}";
+		$sql->query($query);
 	}
 
 	public function __toString(){
@@ -93,6 +113,13 @@ class Usuario{
 			"dessenha"=>$this->getDessenha(),
 			"dtcadastro"=>$this->getDtcadastro()->format("d/m/Y H:i:s")
 		));
+	}
+
+	//CONSTRUTOR JÁ CRIA UM USUÁRIO COM LOGIN E SENHA
+	//AO CRIAR UM CONSTRUTOR COM PARAMETROS ELE DESATIVA O PADRÃO, ENTÃO COLOCA ="" PRA ELE ACEITAR SEM PARÂMETROS TAMBÉM
+	public function __construct($login ="", $senha=""){
+		$this->setDeslogin($login);
+		$this->setDessenha($senha);
 	}
 }
  ?>
