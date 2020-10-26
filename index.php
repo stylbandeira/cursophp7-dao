@@ -37,11 +37,15 @@ $aluno->insert();
 */
 
 //ALTERANDO USUARIO/SENHA
+/*$usuario = new Usuario();
+$usuario->loadById(8);
+$usuario->update("testeUpdate", "Usuario8");
+*/
+
+//DELETANDO USUARIO
 $usuario = new Usuario();
 $usuario->loadById(8);
-
-$usuario->update("testeUpdate", "Usuario8");
-
+$usuario->delete();
 echo $usuario;
 
  ?>
